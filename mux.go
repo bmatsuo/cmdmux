@@ -1,4 +1,5 @@
 // Copyright 2013, Bryan Matsuo. All rights reserved.
+
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -12,13 +13,20 @@ import (
 )
 
 var ErrDoubleRegister = errors.New("name already registered")
+var errCmdMissing = errors.New("no command given")
+
+type cmdUnknownError string
+
+func (err cmdUnknownError) String() string {
+	return fmt.Sprint("unknown command:", string(err))
+}
 
 var defaultCmdMissing = func(name string, args []string) {
-	panic(errors.New("no command given"))
+	panic(errCmdMissing)
 }
 
 var defaultCmdUnknown = func(name string, args []string) {
-	panic(errors.New("unknown command: " + args[0]))
+	panic(cmdUnknownError(name))
 }
 
 type Mux struct {
