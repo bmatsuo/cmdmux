@@ -29,6 +29,7 @@ var defaultCmdUnknown = func(name string, args []string) {
 	panic(cmdUnknownError(name))
 }
 
+// a command mux.
 type Mux struct {
 	CmdMissing func(name string, args []string)
 	CmdUnknown func(name string, args []string)
@@ -36,6 +37,7 @@ type Mux struct {
 	table      commandTable
 }
 
+// create a new mux
 func NewMux() *Mux {
 	return &Mux{table: newCommandTable(5)}
 }
@@ -56,6 +58,8 @@ func (mux *Mux) cmdUnknown(name string, args []string) {
 	mux.CmdUnknown(name, args)
 }
 
+// implements the Command interaface. execute the registered command named in
+// args[0].
 func (mux *Mux) Exec(name string, args []string) {
 	if len(args) == 0 {
 		mux.cmdMissing(name, args)
@@ -70,10 +74,12 @@ func (mux *Mux) Exec(name string, args []string) {
 	cmd.Exec(name, args[1:])
 }
 
+// register a function
 func (mux *Mux) RegisterFunc(name string, cmd CommandFunc) error {
 	return mux.Register(name, cmd)
 }
 
+// register a command
 func (mux *Mux) Register(name string, cmd Command) error {
 	var err error
 	mux.table.Write(name, func(_cmd Command) (Command, error) {
@@ -88,10 +94,12 @@ func (mux *Mux) Register(name string, cmd Command) error {
 	return err
 }
 
+// returns the names of registered commands.
 func (mux *Mux) Commands() []string {
 	return mux.cmdnames
 }
 
+// a threadsafe backing to a Mux
 type commandTable chan map[string]Command
 
 var errNoop = errors.New("noop")
