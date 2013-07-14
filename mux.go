@@ -24,6 +24,7 @@ var defaultCmdUnknown = func(name string, args []string) {
 type Mux struct {
 	CmdMissing func(name string, args []string)
 	CmdUnknown func(name string, args []string)
+	cmdnames   []string
 	table      commandTable
 }
 
@@ -72,19 +73,15 @@ func (mux *Mux) Register(name string, cmd Command) error {
 			err = ErrDoubleRegister
 			return nil, err
 		}
+		// update cmdnames inside the lock
+		mux.cmdnames = append(mux.cmdnames, name)
 		return cmd, nil
 	})
 	return err
 }
 
 func (mux *Mux) Commands() []string {
-	table := <-mux.table
-	defer func() { mux.table <- table }()
-	cmds := make([]string, 0, len(table))
-	for name := range table {
-		cmds = append(cmds, name)
-	}
-	return cmds
+	return mux.cmdnames
 }
 
 type commandTable chan map[string]Command
