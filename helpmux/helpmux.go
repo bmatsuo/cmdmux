@@ -50,6 +50,7 @@ func New() *HelpMux {
 	return mux
 }
 
+// execute a help topic specified in the first argument.
 func (mux *HelpMux) Help(name string, args []string) {
 	if len(args) == 0 {
 		if mux.HelpDefault != nil {
@@ -62,6 +63,7 @@ func (mux *HelpMux) Help(name string, args []string) {
 	}
 }
 
+// execute a command specified in the first argument.
 func (mux *HelpMux) Exec(name string, args []string) {
 	if len(args) == 0 {
 		mux.CmdMissing(name, args)
@@ -90,14 +92,17 @@ func (mux *HelpMux) Register(name string, cmd cmdmux.Command) error {
 	return mux.cmd.Register(name, cmd)
 }
 
+// register a command function. no help topic will be registered.
 func (mux *HelpMux) RegisterFunc(name string, cmd cmdmux.CommandFunc) error {
 	return mux.Register(name, cmd)
 }
 
+// register a help topic.
 func (mux *HelpMux) RegisterHelp(name string, cmd cmdmux.Command) error {
 	return mux.help.Register(name, cmd)
 }
 
+// register a help topic function.
 func (mux *HelpMux) RegisterHelpFunc(name string, cmd cmdmux.CommandFunc) error {
 	return mux.help.Register(name, cmd)
 }
