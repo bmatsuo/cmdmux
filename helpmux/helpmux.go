@@ -4,8 +4,9 @@
 
 // helpmux.go [created: Sun, 30 Jun 2013]
 
-// Package helpmux does ....
-// TODO commands that implement the HelpCommand interface are ignored >_<
+/*
+Package helpmux provides 'help' functionality for complex command line programs.
+*/
 package helpmux
 
 import (
@@ -14,6 +15,32 @@ import (
 
 	"github.com/bmatsuo/cmdmux"
 )
+
+var defaultHelpMux = New()
+
+func Register(name string, cmd cmdmux.Command) error {
+	return defaultHelpMux.Register(name, cmd)
+}
+
+func RegisterFunc(name string, cmd cmdmux.CommandFunc) error {
+	return defaultHelpMux.RegisterFunc(name, cmd)
+}
+
+func RegisterHelp(name string, cmd cmdmux.Command) error {
+	return defaultHelpMux.RegisterHelp(name, cmd)
+}
+
+func RegisterHelpFunc(name string, cmd cmdmux.CommandFunc) error {
+	return defaultHelpMux.RegisterHelpFunc(name, cmd)
+}
+
+func Exec(name string, args []string) {
+	defaultHelpMux.Exec(name, args)
+}
+
+func Help(name string, args []string) {
+	defaultHelpMux.Help(name, args)
+}
 
 type HelpCommand interface {
 	cmdmux.Command
