@@ -78,18 +78,16 @@ func (mux *HelpMux) Exec(name string, args []string) {
 	mux.cmd.Exec(name, args)
 }
 
+// register a Command with the given name. if the command is a HelpCommand,
+// then a help topic is registered with the same name
 func (mux *HelpMux) Register(name string, cmd cmdmux.Command) error {
-	var help cmdmux.Command = cmdmux.CommandFunc(func(name string, args []string) {
-		fmt.Printf("no help for `%s`", name)
-	})
 	if cmd, ok := cmd.(HelpCommand); ok {
-		help = cmdmux.CommandFunc(cmd.Help)
+		err := mux.RegisterHelpFunc(name, cmd.Help)
+		if err != nil {
+			return err
+		}
 	}
-	err := mux.help.Register(name, help)
-	if err != nil {
-		return err
-	}
-	return mux.cmd.Register(name, help)
+	return mux.cmd.Register(name, cmd)
 }
 
 func (mux *HelpMux) RegisterFunc(name string, cmd cmdmux.CommandFunc) error {
