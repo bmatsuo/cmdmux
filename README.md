@@ -1,4 +1,7 @@
 [godoc.org]: http://godoc.org/github.com/bmatsuo/cmdmux/ "godoc.org"
+[build status]: https://travis-ci.org/bmatsuo/cmdmux.png?branch=master "Build Status"
+
+[![Build Status][]](https://travis-ci.org/bmatsuo/cmdmux)
 
 Install
 =======
