@@ -1,9 +1,9 @@
-[godoc.org]: http://godoc.org/github.com/bmatsuo/helpmux/ "godoc.org"
+[godoc.org]: http://godoc.org/github.com/bmatsuo/cmdmux/exp/helpmux/ "godoc.org"
 
 Install
 =======
 
-    go get github.com/bmatsuo/helpmux
+    go get github.com/bmatsuo/cmdmux/exp/helpmux
 
 Docs
 ====
