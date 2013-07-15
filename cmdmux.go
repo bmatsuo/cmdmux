@@ -5,7 +5,7 @@
 // cmdmux.go [created: Sun, 30 Jun 2013]
 
 /*
-command line sub command nano framework
+argument based subcommands for executables
 */
 package cmdmux
 

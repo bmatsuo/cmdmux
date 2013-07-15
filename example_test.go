@@ -15,9 +15,7 @@ func Example() {
 
 	RegisterFunc("new", CreateTodo)
 	RegisterFunc("list", ListTodos)
-	fmt.Println(Commands())
-	Exec("todo", []string{"new", "quinoa"})
+	Exec("todo", []string{"new", "quinoa"}) // usually os.Args[0], os.Args[1:]
 	// Output:
-	// [new list]
 	// created: [quinoa]
 }
