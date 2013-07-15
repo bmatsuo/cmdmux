@@ -5,6 +5,7 @@
 // helpmux.go [created: Sun, 30 Jun 2013]
 
 // Package helpmux does ....
+// TODO commands that implement the HelpCommand interface are ignored >_<
 package helpmux
 
 import (
@@ -33,7 +34,6 @@ func New() *HelpMux {
 	mux.help = cmdmux.NewMux()
 	mux.help.CmdUnknown = func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: unknown help topic\n", args[0])
-		mux.HelpDefault(name, args)
 	}
 	mux.help.CmdMissing = func(name string, args []string) {
 		mux.HelpDefault(name, args)
@@ -42,14 +42,24 @@ func New() *HelpMux {
 	mux.cmd = cmdmux.NewMux()
 	mux.cmd.CmdUnknown = func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: unknown command\n", args[0])
-		mux.HelpDefault(name, args)
 	}
 	mux.cmd.CmdMissing = func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: missing command\n", name)
-		mux.HelpDefault(name, args)
 	}
 
 	return mux
+}
+
+func (mux *HelpMux) Help(name string, args []string) {
+	if len(args) == 0 {
+		if mux.HelpDefault != nil {
+			mux.HelpDefault(name, args)
+			return
+		}
+		fmt.Fprintf(os.Stderr, "%s: no help\n", name)
+	} else {
+		mux.help.Exec(name+" "+args[0], args[1:])
+	}
 }
 
 func (mux *HelpMux) Exec(name string, args []string) {
@@ -60,9 +70,8 @@ func (mux *HelpMux) Exec(name string, args []string) {
 	name = fmt.Sprintf("%s %s", name, args[0])
 	args = args[1:]
 	if args[0] == "help" {
-
 		if len(args) == 1 {
-			mux.HelpDefault(name, args)
+			mux.Help(name, args[1:])
 			return
 		}
 	}
