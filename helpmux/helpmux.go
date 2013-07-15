@@ -12,6 +12,7 @@ package helpmux
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/bmatsuo/cmdmux"
 )
@@ -42,6 +43,14 @@ func Help(name string, args []string) {
 	defaultHelpMux.Help(name, args)
 }
 
+func Commands() []string {
+	return defaultHelpMux.Commands()
+}
+
+func HelpTopics() []string {
+	return defaultHelpMux.HelpTopics()
+}
+
 type HelpCommand interface {
 	cmdmux.Command
 	Help(name string, args []string)
@@ -63,7 +72,7 @@ func New() *HelpMux {
 		fmt.Fprintf(os.Stderr, "%s: unknown help topic\n", args[0])
 	}
 	mux.help.CmdMissing = func(name string, args []string) {
-		mux.HelpDefault(name, args)
+		fmt.Fprintf(os.Stderr, "%s: help topic missing\n", name, args)
 	}
 
 	mux.cmd = cmdmux.NewMux()
@@ -79,14 +88,19 @@ func New() *HelpMux {
 
 // execute a help topic specified in the first argument.
 func (mux *HelpMux) Help(name string, args []string) {
+	fmt.Println(name, args)
 	if len(args) == 0 {
 		if mux.HelpDefault != nil {
 			mux.HelpDefault(name, args)
 			return
+		} else {
+			fmt.Fprintf(os.Stderr, "%s: help topics\n\t", name)
+			fmt.Fprintf(os.Stderr, strings.Join(mux.HelpTopics(), "\n\t"))
+			fmt.Fprintln(os.Stderr)
+			os.Exit(1)
 		}
-		fmt.Fprintf(os.Stderr, "%s: no help\n", name)
 	} else {
-		mux.help.Exec(name+" "+args[0], args[1:])
+		mux.help.Exec(name, args)
 	}
 }
 
@@ -96,15 +110,24 @@ func (mux *HelpMux) Exec(name string, args []string) {
 		mux.CmdMissing(name, args)
 		return
 	}
-	name = fmt.Sprintf("%s %s", name, args[0])
-	args = args[1:]
-	if args[0] == "help" {
-		if len(args) == 1 {
-			mux.Help(name, args[1:])
-			return
-		}
+	base := args[0]
+	name = fmt.Sprintf("%s %s", name, base)
+	if base == "help" {
+		args = args[1:]
+		mux.Help(name, args)
+		return
 	}
 	mux.cmd.Exec(name, args)
+}
+
+// registered command names.
+func (mux *HelpMux) Commands() []string {
+	return mux.cmd.Commands()
+}
+
+// registered help topics.
+func (mux *HelpMux) HelpTopics() []string {
+	return mux.help.Commands()
 }
 
 // register a Command with the given name. if the command is a HelpCommand,
