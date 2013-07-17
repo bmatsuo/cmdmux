@@ -20,10 +20,10 @@ func Example() {
 	RegisterFunc("list", ListTodos)
 
 	Exec("todo", []string{"new", "quinoa"}) // usually os.Args[0], os.Args[1:]
-	// Output:
-	// created: quinoa
+	// Output: created: quinoa
 }
 
+// Using the running example...
 func ExampleCommands() {
 	commands := Commands()
 	commandstr := strings.Join(commands, ", ")
