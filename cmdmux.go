@@ -5,7 +5,7 @@
 // cmdmux.go [created: Sun, 30 Jun 2013]
 
 /*
-argument based subcommands for executables
+subcommands
 */
 package cmdmux
 
