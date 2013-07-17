@@ -57,9 +57,9 @@ type HelpCommand interface {
 }
 
 type HelpMux struct {
-	CmdMissing  func(name string, args []string)
-	CmdUnknown  func(name string, args []string)
-	HelpDefault func(name string, args []string)
+	CmdMissing  cmdmux.Command
+	CmdUnknown  cmdmux.Command
+	HelpDefault cmdmux.Command
 	cmd         *cmdmux.Mux
 	help        *cmdmux.Mux
 }
@@ -68,20 +68,20 @@ func New() *HelpMux {
 	mux := new(HelpMux)
 
 	mux.help = cmdmux.NewMux()
-	mux.help.CmdUnknown = func(name string, args []string) {
+	mux.help.CmdUnknown = cmdmux.CommandFunc(func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: unknown help topic\n", args[0])
-	}
-	mux.help.CmdMissing = func(name string, args []string) {
+	})
+	mux.help.CmdMissing = cmdmux.CommandFunc(func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: help topic missing\n", name, args)
-	}
+	})
 
 	mux.cmd = cmdmux.NewMux()
-	mux.cmd.CmdUnknown = func(name string, args []string) {
+	mux.cmd.CmdUnknown = cmdmux.CommandFunc(func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: unknown command\n", args[0])
-	}
-	mux.cmd.CmdMissing = func(name string, args []string) {
+	})
+	mux.cmd.CmdMissing = cmdmux.CommandFunc(func(name string, args []string) {
 		fmt.Fprintf(os.Stderr, "%s: missing command\n", name)
-	}
+	})
 
 	return mux
 }
@@ -91,7 +91,7 @@ func (mux *HelpMux) Help(name string, args []string) {
 	fmt.Println(name, args)
 	if len(args) == 0 {
 		if mux.HelpDefault != nil {
-			mux.HelpDefault(name, args)
+			mux.HelpDefault.Exec(name, args)
 			return
 		} else {
 			fmt.Fprintf(os.Stderr, "%s: help topics\n\t", name)
@@ -107,7 +107,7 @@ func (mux *HelpMux) Help(name string, args []string) {
 // execute a command specified in the first argument.
 func (mux *HelpMux) Exec(name string, args []string) {
 	if len(args) == 0 {
-		mux.CmdMissing(name, args)
+		mux.CmdMissing.Exec(name, args)
 		return
 	}
 	base := args[0]

@@ -82,9 +82,9 @@ func TestMuxExecUnknown(t *testing.T) {
 	}()
 	mux := NewMux()
 	caught := false
-	mux.CmdUnknown = func(string, []string) {
+	mux.CmdUnknown = CommandFunc(func(string, []string) {
 		caught = true
-	}
+	})
 	mux.Exec("bleh", []string{"meh"})
 	if !caught {
 		t.Fatal("error not caught")
@@ -99,9 +99,9 @@ func TestMuxExecMissing(t *testing.T) {
 	}()
 	mux := NewMux()
 	caught := false
-	mux.CmdMissing = func(string, []string) {
+	mux.CmdMissing = CommandFunc(func(string, []string) {
 		caught = true
-	}
+	})
 	mux.Exec("bleh", []string{})
 	if !caught {
 		t.Fatal("error not caught")

@@ -32,8 +32,8 @@ var defaultCmdUnknown = func(name string, args []string) {
 
 // a command mux.
 type Mux struct {
-	CmdMissing func(name string, args []string)
-	CmdUnknown func(name string, args []string)
+	CmdMissing Command
+	CmdUnknown Command
 	cmdnames   []string
 	table      commandTable
 }
@@ -48,7 +48,7 @@ func (mux *Mux) cmdMissing(name string, args []string) {
 		defaultCmdMissing(name, args)
 		return
 	}
-	mux.CmdMissing(name, args)
+	mux.CmdMissing.Exec(name, args)
 }
 
 func (mux *Mux) cmdUnknown(name string, args []string) {
@@ -56,7 +56,7 @@ func (mux *Mux) cmdUnknown(name string, args []string) {
 		defaultCmdUnknown(name, args)
 		return
 	}
-	mux.CmdUnknown(name, args)
+	mux.CmdUnknown.Exec(name, args)
 }
 
 // implements the Command interaface. execute the registered command named in
