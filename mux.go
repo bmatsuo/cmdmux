@@ -60,8 +60,8 @@ func (mux *Mux) cmdUnknown(name string, args []string) {
 }
 
 // implements the Command interaface. execute the command named in args[0].
-// if there is no such command, mux.CmdMissing() is called. if the argument
-// list is empty, mux.CmdUnknown() is called. a runtime panic if the command
+// if there is no such command, mux.CmdUnknown() is called. if the argument
+// list is empty, mux.CmdMissing() is called. a runtime panic if the command
 // is missing or unrecognized and the appropriate command is nil.
 func (mux *Mux) Exec(name string, args []string) {
 	if len(args) == 0 {
