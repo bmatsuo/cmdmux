@@ -12,6 +12,7 @@ import (
 	"fmt"
 )
 
+var ErrNilRegister = errors.New("cannot register nil command")
 var ErrDoubleRegister = errors.New("name already registered")
 var errCmdMissing = errors.New("no command given")
 
@@ -76,11 +77,17 @@ func (mux *Mux) Exec(name string, args []string) {
 
 // register a function
 func (mux *Mux) RegisterFunc(name string, cmd CommandFunc) error {
+	if cmd == nil {
+		return ErrNilRegister
+	}
 	return mux.Register(name, cmd)
 }
 
 // register a command
 func (mux *Mux) Register(name string, cmd Command) error {
+	if cmd == nil {
+		return ErrNilRegister
+	}
 	var err error
 	mux.table.Write(name, func(_cmd Command) (Command, error) {
 		if _cmd != nil {
