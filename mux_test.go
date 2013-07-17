@@ -10,27 +10,41 @@ import (
 	"testing"
 )
 
-func TestMuxRegister(t *testing.T) {
-	// i'm going to cheat for now and only test RegisterFunc
-	mux := NewMux()
-	noop := func(n string, a []string) {}
+func noopFunc(name string, args []string) {}
 
+var noop Command = CommandFunc(noopFunc)
+
+func TestMuxRegister(t *testing.T) {
+	mux := NewMux()
+	funcmux := NewMux()
+
+	// register success
 	for i, name := range []string{
 		"abc", "def", "ghi",
 		"adg", "beh", "cfi",
 	} {
-		err := mux.RegisterFunc(name, noop)
+		err := mux.Register(name, noop)
 		if err != nil {
 			t.Errorf("[%d] couldn't register %q; %v", i, name, err)
 		}
+		err = funcmux.RegisterFunc(name, noopFunc)
+		if err != nil {
+			t.Errorf("[%d] couldn't register func %q; %v", i, name, err)
+		}
 	}
 
+	// double register
 	dup := "def"
-	err := mux.RegisterFunc(dup, noop) // double register
+	err := mux.Register(dup, noop)
 	if err == nil {
 		t.Errorf("registered twice; %q", dup)
 	}
+	err = funcmux.RegisterFunc(dup, noopFunc)
+	if err == nil {
+		t.Errorf("registered func twice; %q", dup)
+	}
 
+	// nil register
 	err = mux.RegisterFunc("xyz", nil)
 	if err == nil {
 		t.Errorf("registered nil func")
