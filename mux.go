@@ -30,7 +30,7 @@ var defaultCmdUnknown = func(name string, args []string) {
 	panic(cmdUnknownError(name))
 }
 
-// a command mux.
+// a subcommand mux. a simple name lookup table.
 type Mux struct {
 	CmdMissing Command
 	CmdUnknown Command
@@ -59,8 +59,10 @@ func (mux *Mux) cmdUnknown(name string, args []string) {
 	mux.CmdUnknown.Exec(name, args)
 }
 
-// implements the Command interaface. execute the registered command named in
-// args[0].
+// implements the Command interaface. execute the command named in args[0].
+// if there is no such command, mux.CmdMissing() is called. if the argument
+// list is empty, mux.CmdUnknown() is called. a runtime panic if the command
+// is missing or unrecognized and the appropriate command is nil.
 func (mux *Mux) Exec(name string, args []string) {
 	if len(args) == 0 {
 		mux.cmdMissing(name, args)
@@ -75,7 +77,7 @@ func (mux *Mux) Exec(name string, args []string) {
 	cmd.Exec(name, args[1:])
 }
 
-// register a function
+// register a function. see Register.
 func (mux *Mux) RegisterFunc(name string, cmd CommandFunc) error {
 	if cmd == nil {
 		return ErrNilRegister
@@ -83,7 +85,8 @@ func (mux *Mux) RegisterFunc(name string, cmd CommandFunc) error {
 	return mux.Register(name, cmd)
 }
 
-// register a command
+// register a command with a given name. the name cannot already be taken and
+// the command cannot be nil.
 func (mux *Mux) Register(name string, cmd Command) error {
 	if cmd == nil {
 		return ErrNilRegister
@@ -101,7 +104,7 @@ func (mux *Mux) Register(name string, cmd Command) error {
 	return err
 }
 
-// returns the names of registered commands.
+// returns the names of registered commands in the order they were registered.
 func (mux *Mux) Commands() []string {
 	return mux.cmdnames
 }

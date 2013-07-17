@@ -5,13 +5,13 @@
 // cmdmux.go [created: Sun, 30 Jun 2013]
 
 /*
-subcommands
+Package cmdmux provides lightweight cli subcommands.
 */
 package cmdmux
 
 var defaultMux = NewMux()
 
-// call Exec() on the default mux.
+// execute a command with the default mux.
 func Exec(name string, args []string) {
 	defaultMux.Exec(name, args)
 }
@@ -26,12 +26,12 @@ func Register(name string, cmd Command) error {
 	return defaultMux.Register(name, cmd)
 }
 
-// retrieve the names of commands registered with the default mux.
+// get commands available in the default mux.
 func Commands() []string {
 	return defaultMux.Commands()
 }
 
-// a sub command. the Exec() method may or may not call os.Exit().
+// a subcommand.
 type Command interface {
 	Exec(name string, args []string)
 }
