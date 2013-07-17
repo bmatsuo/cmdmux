@@ -26,6 +26,7 @@ func Example() {
 
 func ExampleCommands() {
 	commands := Commands()
-	fmt.Printf("available commands: %s", strings.Join(commands, ", "))
+	commandstr := strings.Join(commands, ", ")
+	fmt.Println("available commands:", commandstr)
 	// Output: available commands: new, list
 }
